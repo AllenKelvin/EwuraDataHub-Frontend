@@ -8,11 +8,12 @@ import { useUser } from "@/hooks/use-auth";
 import { useAdminAllOrders } from "@/hooks/use-admin";
 
 export default function PaymentReturnPage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const search = useSearch();
   const qc = useQueryClient();
   const { data: user, isLoading: userLoading } = useUser();
   const userId = user?.id;
+  const isWalletFunding = location === "/payment-complete";
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null);
   const [previousBalance, setPreviousBalance] = useState<number | null>(null);
   const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export default function PaymentReturnPage() {
   const isSuccess = !!success && status !== "cancelled";
 
   useEffect(() => {
-    if (!reference || status === "cancelled" || userLoading || !user) return;
+    if (!isWalletFunding || !reference || status === "cancelled" || userLoading || !user) return;
     const verifyWalletPayment = async () => {
       try {
         const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
@@ -42,7 +43,7 @@ export default function PaymentReturnPage() {
       }
     };
     void verifyWalletPayment();
-  }, [reference, status, userId, userLoading, qc]);
+  }, [isWalletFunding, reference, status, userId, userLoading, qc]);
 
   useEffect(() => {
     qc.invalidateQueries({ queryKey: ["/api/cart"] });
@@ -73,10 +74,10 @@ export default function PaymentReturnPage() {
       }
     };
 
-    if (!userLoading && user && isSuccess) {
+    if (!isWalletFunding && !userLoading && user && isSuccess) {
       getLastOrder();
     }
-  }, [user, userLoading, isSuccess]);
+  }, [isWalletFunding, user, userLoading, isSuccess]);
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-6">
@@ -88,11 +89,20 @@ export default function PaymentReturnPage() {
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Payment Successful!</h1>
             <p className="text-muted-foreground mb-6">
-              Your order has been placed. You can view it in Recent Orders on your dashboard.
+              {isWalletFunding
+                ? "Your wallet has been funded successfully."
+                : "Your order has been placed. You can view it in Recent Orders on your dashboard."}
             </p>
             {verificationMessage && <p className="text-green-600 font-medium mb-4">{verificationMessage}</p>}
 
-            {user?.role === 'agent' && !userLoading && (
+            {isWalletFunding && user && !userLoading && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-left">
+                <div className="text-sm font-medium text-blue-900">New Wallet Balance</div>
+                <div className="text-xl font-bold text-blue-900 mt-1">GHS {Number(user.balance ?? 0).toFixed(2)}</div>
+              </div>
+            )}
+
+            {!isWalletFunding && user?.role === 'agent' && !userLoading && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 space-y-2 text-left">
                 <div className="text-sm font-medium text-blue-900">Account Balance</div>
                 {previousBalance !== null && transactionAmount !== null && (
