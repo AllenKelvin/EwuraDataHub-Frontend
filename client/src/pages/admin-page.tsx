@@ -57,7 +57,7 @@ import {
 function AdminAgentsTab() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { data: agents, isLoading: isLoadingAgents } = useAgents();
+  const { data: agents, isLoading: isLoadingAgents, isError: agentsError } = useAgents();
   const verifyMutation = useVerifyAgent();
   const denyMutation = useDenyAgent();
   const creditMutation = useCreditAgent();
@@ -115,6 +115,11 @@ function AdminAgentsTab() {
       {isLoadingAgents ? (
         <div className="flex justify-center py-16">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : agentsError ? (
+        <div className="text-center py-16 text-destructive">
+          <p className="font-semibold">Unable to load agents.</p>
+          <p className="text-sm mt-1">Check your admin session and backend connection.</p>
         </div>
       ) : !agents?.length ? (
         <div className="text-center py-16 text-muted-foreground">
@@ -265,12 +270,13 @@ function ManagePackagesTable() {
 
 function AdminAllOrdersTable() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useAdminAllOrders(page, 50);
+  const { data, isLoading, isError: ordersError } = useAdminAllOrders(page, 50);
   const orders = data?.orders ?? [];
   const totalSpent = data?.totalSpent ?? 0;
   const pagination = data?.pagination ?? { total: 0, page: 1, limit: 50, pages: 0 };
 
   if (isLoading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+  if (ordersError) return <Card><CardContent className="text-center py-8 text-destructive">Unable to load orders. Check your admin session and backend connection.</CardContent></Card>;
   return (
     <Card>
       <CardHeader>

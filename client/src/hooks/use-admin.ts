@@ -71,10 +71,14 @@ export function useDenyAgent() {
 export function useAgents() {
   return useQuery({
     queryKey: ["/api/users/agents"],
+    retry: 1,
     queryFn: async () => {
       const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
       const res = await fetchWithAuth('/api/users/agents');
-      if (!res.ok) throw new Error("Failed to fetch agents");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.message || "Failed to fetch agents");
+      }
       return res.json();
     },
   });
@@ -116,10 +120,14 @@ export function useAdminTotals() {
 export function useAdminAllOrders(page = 1, limit = 50) {
   return useQuery({
     queryKey: ["/api/admin/orders", page, limit],
+    retry: 1,
     queryFn: async () => {
       const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
       const res = await fetchWithAuth(`/api/admin/orders?page=${page}&limit=${limit}`);
-      if (!res.ok) throw new Error("Failed to fetch orders");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.message || "Failed to fetch orders");
+      }
       const data = await res.json();
       return { ...data, pagination: data.pagination || { total: 0, page: 1, limit, pages: 0 } };
     },
