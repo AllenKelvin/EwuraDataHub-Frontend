@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://allen-data-hub-backend.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
 
 // List Unverified Agents
 export function useUnverifiedAgents() {
