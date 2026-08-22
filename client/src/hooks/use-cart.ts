@@ -46,7 +46,10 @@ export function useAddToCart() {
         localStorage.setItem('pendingCart', JSON.stringify(pending));
         return pending;
       }
-      if (!res.ok) throw new Error('Failed to add to cart');
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Failed to add to cart');
+      }
       return res.json();
     },
     onSuccess: () => {

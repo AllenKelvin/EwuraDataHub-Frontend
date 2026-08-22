@@ -54,7 +54,7 @@ Order Status: ${order.status}`;
       }
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/233592786175?text=${encodedMessage}`;
+      const whatsappUrl = `https://wa.me/233249083825?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
       
       // Close dialog after sending
