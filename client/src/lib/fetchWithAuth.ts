@@ -1,6 +1,6 @@
 import { getAccessToken, setAccessToken } from "@/hooks/use-auth";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://allen-data-hub-backend.onrender.com";
 
 async function tryRefresh(): Promise<string | null> {
   try {
