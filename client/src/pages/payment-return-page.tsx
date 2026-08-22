@@ -12,14 +12,37 @@ export default function PaymentReturnPage() {
   const search = useSearch();
   const qc = useQueryClient();
   const { data: user, isLoading: userLoading } = useUser();
+  const userId = user?.id;
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null);
   const [previousBalance, setPreviousBalance] = useState<number | null>(null);
+  const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
 
   const params = new URLSearchParams(search);
   const reference = params.get("reference");
   const status = params.get("status");
   const success = params.get("trxref") || reference;
   const isSuccess = !!success && status !== "cancelled";
+
+  useEffect(() => {
+    if (!reference || status === "cancelled" || userLoading || !user) return;
+    const verifyWalletPayment = async () => {
+      try {
+        const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
+        const response = await fetchWithAuth("/api/payments/verify", {
+          method: "POST",
+          body: JSON.stringify({ reference }),
+        });
+        const data = await response.json();
+        if (response.ok && data.status) {
+          setVerificationMessage(`Wallet credited with GHS ${Number(data.amount).toFixed(2)}`);
+          await qc.refetchQueries({ queryKey: ["/api/user"] });
+        }
+      } catch (error) {
+        console.error("Payment verification failed", error);
+      }
+    };
+    void verifyWalletPayment();
+  }, [reference, status, userId, userLoading, qc]);
 
   useEffect(() => {
     qc.invalidateQueries({ queryKey: ["/api/cart"] });
@@ -67,6 +90,7 @@ export default function PaymentReturnPage() {
             <p className="text-muted-foreground mb-6">
               Your order has been placed. You can view it in Recent Orders on your dashboard.
             </p>
+            {verificationMessage && <p className="text-green-600 font-medium mb-4">{verificationMessage}</p>}
 
             {user?.role === 'agent' && !userLoading && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 space-y-2 text-left">
