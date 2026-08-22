@@ -17,8 +17,9 @@ export default function PaymentReturnPage() {
 
   const params = new URLSearchParams(search);
   const reference = params.get("reference");
+  const status = params.get("status");
   const success = params.get("trxref") || reference;
-  const isSuccess = !!success;
+  const isSuccess = !!success && status !== "cancelled";
 
   useEffect(() => {
     qc.invalidateQueries({ queryKey: ["/api/cart"] });
@@ -33,7 +34,8 @@ export default function PaymentReturnPage() {
         const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
         const res = await fetchWithAuth(api.orders.listMyOrders.path);
         if (res.ok) {
-          const orders = await res.json();
+          const response = await res.json();
+          const orders = Array.isArray(response) ? response : response.orders;
           if (orders && orders.length > 0) {
             const lastOrder = orders[0];
             setTransactionAmount(lastOrder.price);

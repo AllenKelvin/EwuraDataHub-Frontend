@@ -64,6 +64,13 @@ function Router() {
           </LayoutShell>
         )}
       </Route>
+      <Route path="/payment-complete">
+        {() => (
+          <LayoutShell>
+            <PaymentReturnPage />
+          </LayoutShell>
+        )}
+      </Route>
       
       {/* Protected Routes */}
       <Route path="/">

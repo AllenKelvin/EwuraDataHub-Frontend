@@ -32,7 +32,7 @@ export default function FundWalletPage() {
       const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
       const resp = await fetchWithAuth('/api/payments/initialize', {
         method: 'POST',
-        body: JSON.stringify({ amount: Math.round(amount * 100), email: user.email, metadata: { type: 'wallet', agentId: user.id } }),
+        body: JSON.stringify({ amount, email: user.email, metadata: { type: 'wallet', agentId: user.id } }),
       });
       const data = await resp.json();
       if (data && (data.data?.authorization_url || data.authorization_url)) {
