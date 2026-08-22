@@ -283,7 +283,7 @@ export default function AuthPage() {
   // Register Form
   const registerForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
-    defaultValues: { username: "", email: "", password: "", role: "user" },
+    defaultValues: { username: "", email: "", password: "", phoneNumber: "", role: "user" },
   });
 
   function onLogin(values: LoginFormValues) {
@@ -457,7 +457,7 @@ export default function AuthPage() {
                         name="phoneNumber"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone Number (optional)</FormLabel>
+                            <FormLabel>Phone Number <span className="text-red-500">*</span></FormLabel>
                             <FormControl>
                               <Input placeholder="0241234567" className="h-12" maxLength={10} {...field} />
                             </FormControl>
