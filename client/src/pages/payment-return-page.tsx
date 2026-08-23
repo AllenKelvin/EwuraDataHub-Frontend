@@ -45,6 +45,42 @@ export default function PaymentReturnPage() {
     void verifyWalletPayment();
   }, [isWalletFunding, reference, status, userId, userLoading, qc]);
 
+  // For order payments, verify and create orders
+  useEffect(() => {
+    if (isWalletFunding || !reference || status === "cancelled" || userLoading || !user) return;
+    
+    const verifyOrderPayment = async () => {
+      try {
+        const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
+        console.log("[PaymentReturn] Verifying order payment with reference:", reference);
+        
+        const response = await fetchWithAuth("/api/payments/verify-and-create-orders", {
+          method: "POST",
+          body: JSON.stringify({ reference }),
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.status) {
+          console.log("[PaymentReturn] Orders created successfully:", data.orders);
+          setVerificationMessage(`Successfully created ${data.orders?.length || 0} order(s)`);
+          
+          // Refresh all relevant queries
+          await qc.refetchQueries({ queryKey: ["/api/user"] });
+          await qc.refetchQueries({ queryKey: [api.orders.listMyOrders.path] });
+          await qc.refetchQueries({ queryKey: ["/api/cart"] });
+        } else {
+          console.error("[PaymentReturn] Order creation failed:", data.message);
+          setVerificationMessage(data.message || "Failed to create orders");
+        }
+      } catch (error) {
+        console.error("[PaymentReturn] Order verification failed", error);
+        setVerificationMessage("Failed to verify payment");
+      }
+    };
+    
+    void verifyOrderPayment();
+  }, [isWalletFunding, reference, status, userId, userLoading, qc, user]);
+
   useEffect(() => {
     qc.invalidateQueries({ queryKey: ["/api/cart"] });
     qc.invalidateQueries({ queryKey: [api.orders.listMyOrders.path] });
