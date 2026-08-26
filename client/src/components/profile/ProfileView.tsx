@@ -142,7 +142,7 @@ export default function ProfileView({ user }: { user: User }) {
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-3">
-              {user.role === 'agent' && (
+              {(user.role === 'agent' || user.role === 'user') && (
                 <div className="p-4 bg-white border border-border rounded-lg text-left">
                   <div className="text-xs text-muted-foreground">Wallet Balance</div>
                   <div className="text-lg font-bold text-emerald-600">GHS {(user.balance || 0).toFixed(2)}</div>

@@ -51,7 +51,7 @@ export default function DashboardPage() {
         console.error('[Deposits] load failed', e);
       }
     }
-    if (user?.role === 'agent') loadDeposits();
+    if (user?.role === 'agent' || user?.role === 'user') loadDeposits();
     return () => { mounted = false; };
   }, [user]);
 
@@ -127,7 +127,7 @@ export default function DashboardPage() {
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {user.role === 'agent' && (
+        {(user.role === 'agent' || user.role === 'user') && (
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-border/50 flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
               <h3 className="text-muted-foreground font-medium text-sm">Wallet Balance</h3>

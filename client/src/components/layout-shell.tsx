@@ -13,6 +13,7 @@ import {
   MessageCircle,
   MessageSquare,
   Users,
+  Wallet,
   Bell,
   Eye,
   Clock,
@@ -108,6 +109,9 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
                 <span className="text-sm font-medium">{user.isVerified ? "Verified" : "Pending"}</span>
               </div>
             </div>
+          )}
+          {(user.role === 'agent' || user.role === 'user') && (
+            <NavItem href="/fund-wallet" icon={Wallet} label="Fund Wallet" />
           )}
         </nav>
 
