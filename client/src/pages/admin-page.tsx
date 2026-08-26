@@ -35,10 +35,11 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import {
-  useAgents,
+  useWalletAccounts,
   useCreditAgent,
   useAdminTotals,
   useAdminAllOrders,
+  useRefundOrder,
   useAdminApiAccess,
   usePatchAgentApiPricing,
   useIssueAgentApiKey,
@@ -57,7 +58,7 @@ import {
 function AdminAgentsTab() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { data: agents, isLoading: isLoadingAgents, isError: agentsError } = useAgents();
+  const { data: agents, isLoading: isLoadingAgents, isError: agentsError } = useWalletAccounts();
   const verifyMutation = useVerifyAgent();
   const denyMutation = useDenyAgent();
   const creditMutation = useCreditAgent();
@@ -108,8 +109,8 @@ function AdminAgentsTab() {
         <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
           <Users className="h-4 w-4 text-primary" />
         </div>
-        <h2 className="text-white font-bold flex-1">Manage Agents</h2>
-        <span className="text-white/40 text-xs">{agents ? agents.length : 0} agent{agents?.length === 1 ? "" : "s"}</span>
+        <h2 className="text-white font-bold flex-1">Manage Wallet Accounts</h2>
+        <span className="text-white/40 text-xs">{agents ? agents.length : 0} account{agents?.length === 1 ? "" : "s"}</span>
       </div>
 
       {isLoadingAgents ? (
@@ -124,7 +125,7 @@ function AdminAgentsTab() {
       ) : !agents?.length ? (
         <div className="text-center py-16 text-muted-foreground">
           <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
-          <p className="font-semibold">No agents available for wallet management.</p>
+          <p className="font-semibold">No user or agent accounts available for wallet management.</p>
         </div>
       ) : (
         <div>
@@ -140,9 +141,9 @@ function AdminAgentsTab() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-sm text-foreground">{agent.username}</p>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${agent.isVerified ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                      {agent.role === "agent" && <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${agent.isVerified ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
                         {agent.isVerified ? "✓ Verified" : "Pending"}
-                      </span>
+                      </span>}
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{agent.email} · {agent.phoneNumber ?? "-"}</p>
                   </div>
@@ -156,7 +157,7 @@ function AdminAgentsTab() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
+                  {agent.role === "agent" && <Button
                     size="sm"
                     variant={agent.isVerified ? "outline" : "default"}
                     onClick={() => agent.isVerified ? handleDeny(agent.id) : handleVerify(agent.id)}
@@ -164,7 +165,7 @@ function AdminAgentsTab() {
                     className={`gap-1.5 h-8 text-xs font-semibold ${agent.isVerified ? "border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300" : ""}`}
                   >
                     {agent.isVerified ? <><BadgeX className="h-3.5 w-3.5" /> Deny</> : <><BadgeCheck className="h-3.5 w-3.5" /> Approve</>}
-                  </Button>
+                  </Button>}
                   <Button
                     size="sm"
                     variant="outline"
@@ -221,7 +222,7 @@ function AdminAgentsTab() {
           ))}
         </div>
       )}
-      {/* Deposits fetching available for admin tools; quick-view dialog removed as requested */}
+      {/* Account wallet balances are refreshed after each credit. */}
     </div>
   );
 }
@@ -274,6 +275,7 @@ function AdminAllOrdersTable() {
   const orders = data?.orders ?? [];
   const totalSpent = data?.totalSpent ?? 0;
   const pagination = data?.pagination ?? { total: 0, page: 1, limit: 50, pages: 0 };
+  const refundMutation = useRefundOrder();
 
   if (isLoading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>;
   if (ordersError) return <Card><CardContent className="text-center py-8 text-destructive">Unable to load orders. Check your admin session and backend connection.</CardContent></Card>;
@@ -300,6 +302,7 @@ function AdminAllOrdersTable() {
                 <th className="text-left py-3 px-2 font-semibold">Payment</th>
                 <th className="text-left py-3 px-2 font-semibold">Status</th>
                 <th className="text-left py-3 px-2 font-semibold">Status updated</th>
+                <th className="text-left py-3 px-2 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -339,6 +342,25 @@ function AdminAllOrdersTable() {
                     {o.lastStatusUpdateAt
                       ? format(new Date(o.lastStatusUpdateAt), "MMM d, h:mm a")
                       : "—"}
+                  </td>
+                  <td className="py-3 px-2">
+                    {o.refundStatus === "refunded" ? (
+                      <span className="text-xs font-semibold text-emerald-700">Refunded</span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+                        disabled={refundMutation.isPending}
+                        onClick={() => {
+                          if (confirm(`Refund GHS ${Number(o.price ?? 0).toFixed(2)} to ${o.buyerUsername ?? "this account"}?`)) {
+                            refundMutation.mutate(o.id);
+                          }
+                        }}
+                      >
+                        Refund
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}

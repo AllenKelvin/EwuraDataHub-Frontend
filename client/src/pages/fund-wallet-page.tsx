@@ -32,7 +32,7 @@ export default function FundWalletPage() {
       const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
       const resp = await fetchWithAuth('/api/payments/initialize', {
         method: 'POST',
-        body: JSON.stringify({ amount, email: user.email, metadata: { type: 'wallet', agentId: user.id } }),
+        body: JSON.stringify({ amount, email: user.email, metadata: { type: 'wallet', userId: user.id } }),
       });
       const data = await resp.json();
       if (data && (data.data?.authorization_url || data.authorization_url)) {
@@ -55,7 +55,7 @@ export default function FundWalletPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-xl border border-border/50">
         <h2 className="text-xl font-bold">Fund Wallet</h2>
-        <p className="text-sm text-muted-foreground mt-2">Top up your agent wallet using Paystack.</p>
+        <p className="text-sm text-muted-foreground mt-2">Top up your wallet using Paystack.</p>
         <div className="mt-4 flex gap-2 items-center">
           <Input type="number" placeholder="Amount (GHS)" value={amount} onChange={(e) => setAmount(Number(e.target.value))} disabled={isPaymentLoading} />
           <Button onClick={fundWallet} disabled={isPaymentLoading || amount <= 0 || !hasValidEmail}>

@@ -74,7 +74,7 @@ export default function CartPage() {
               <div className="font-bold">GHS {Number(total).toFixed(2)}</div>
             </div>
 
-            {user?.role === 'agent' && user?.balance !== undefined && (
+            {(user?.role === 'agent' || user?.role === 'user') && user?.balance !== undefined && (
               <div className="border-t pt-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-medium">Current Balance</div>
@@ -100,7 +100,7 @@ export default function CartPage() {
 
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-4">
-                {user?.role === 'agent' && (
+                {(user?.role === 'agent' || user?.role === 'user') && (
                   <div className="flex items-center gap-3">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" name="payment" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} />
@@ -112,7 +112,7 @@ export default function CartPage() {
                     </label>
                   </div>
                 )}
-                {user?.role !== 'agent' && (
+                {user?.role !== 'agent' && user?.role !== 'user' && (
                   <span className="text-sm text-muted-foreground">Payment Method: Paystack</span>
                 )}
               </div>
@@ -151,7 +151,7 @@ export default function CartPage() {
                     }
 
                     // Check wallet balance for agent wallet payment
-                    if (user?.role === 'agent' && paymentMethod === 'wallet' && (user?.balance ?? 0) < total) {
+                    if ((user?.role === 'agent' || user?.role === 'user') && paymentMethod === 'wallet' && (user?.balance ?? 0) < total) {
                       toast({ title: 'Insufficient Balance', description: `You need GHS ${(total - (user?.balance ?? 0)).toFixed(2)} more to complete this purchase.`, variant: 'destructive' });
                       return;
                     }
@@ -183,10 +183,10 @@ export default function CartPage() {
                     setIsProcessing(true);
                     checkout.mutate({ paymentMethod });
                   }}
-                  disabled={isSyncing || checkout.isLoading || isProcessing || merged.length === 0 || (user?.role === 'agent' && paymentMethod === 'wallet' && (user?.balance ?? 0) < total)}
+                  disabled={isSyncing || checkout.isLoading || isProcessing || merged.length === 0 || ((user?.role === 'agent' || user?.role === 'user') && paymentMethod === 'wallet' && (user?.balance ?? 0) < total)}
                 >
                   {isSyncing || checkout.isLoading || isProcessing ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : null}
-                  {isSyncing ? 'Syncing Cart...' : (checkout.isLoading || isProcessing) ? (user?.role === 'agent' ? `Processing ${paymentMethod === 'wallet' ? 'Wallet' : 'Paystack'} Payment...` : 'Processing Payment...') : (user?.role === 'agent' ? `Pay with ${paymentMethod === 'wallet' ? 'Wallet' : 'Paystack'}` : 'Pay with Paystack')}
+                  {isSyncing ? 'Syncing Cart...' : (checkout.isLoading || isProcessing) ? ((user?.role === 'agent' || user?.role === 'user') ? `Processing ${paymentMethod === 'wallet' ? 'Wallet' : 'Paystack'} Payment...` : 'Processing Payment...') : ((user?.role === 'agent' || user?.role === 'user') ? `Pay with ${paymentMethod === 'wallet' ? 'Wallet' : 'Paystack'}` : 'Pay with Paystack')}
                 </Button>
               </div>
             </div>

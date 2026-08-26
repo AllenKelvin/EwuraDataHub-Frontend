@@ -84,6 +84,19 @@ export function useAgents() {
   });
 }
 
+export function useWalletAccounts() {
+  return useQuery({
+    queryKey: ["/api/users/wallet-accounts"],
+    retry: 1,
+    queryFn: async () => {
+      const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
+      const res = await fetchWithAuth("/api/users/wallet-accounts");
+      if (!res.ok) throw new Error("Failed to fetch wallet accounts");
+      return res.json();
+    },
+  });
+}
+
 export function useCreditAgent() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -92,16 +105,36 @@ export function useCreditAgent() {
     mutationFn: async ({ id, amount }: { id: string; amount: number }) => {
       const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
       const res = await fetchWithAuth(`/api/admin/wallet/${id}/load`, { method: "POST", body: JSON.stringify({ amount }) });
-      if (!res.ok) throw new Error("Failed to credit agent");
+      if (!res.ok) throw new Error("Failed to credit wallet");
       return res.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users/wallet-accounts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/agents"] });
-      toast({ title: "Wallet Updated", description: "Agent wallet credited" });
+      toast({ title: "Wallet Updated", description: "Account wallet credited" });
     },
     onError: (err: Error) => {
       toast({ title: "Failed", description: err.message, variant: "destructive" });
     },
+  });
+}
+
+export function useRefundOrder() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
+      const res = await fetchWithAuth(`/api/admin/orders/${id}/refund`, { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.message || "Failed to refund order");
+      return body;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({ title: "Order refunded", description: `GHS ${Number(data.amount).toFixed(2)} returned to the wallet.` });
+    },
+    onError: (error: Error) => toast({ title: "Refund failed", description: error.message, variant: "destructive" }),
   });
 }
 
