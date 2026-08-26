@@ -299,6 +299,8 @@ function AdminAllOrdersTable() {
                 <th className="text-left py-3 px-2 font-semibold">Source</th>
                 <th className="text-left py-3 px-2 font-semibold">Bal. before</th>
                 <th className="text-left py-3 px-2 font-semibold">Bal. after</th>
+                <th className="text-left py-3 px-2 font-semibold">Refund bal. before</th>
+                <th className="text-left py-3 px-2 font-semibold">Refund bal. after</th>
                 <th className="text-left py-3 px-2 font-semibold">Payment</th>
                 <th className="text-left py-3 px-2 font-semibold">Status</th>
                 <th className="text-left py-3 px-2 font-semibold">Status updated</th>
@@ -327,6 +329,12 @@ function AdminAllOrdersTable() {
                   <td className="py-3 px-2 text-xs">
                     {typeof o.walletBalanceAfter === "number" ? `GHS ${Number(o.walletBalanceAfter).toFixed(2)}` : "—"}
                   </td>
+                  <td className="py-3 px-2 text-xs">
+                    {typeof o.refundWalletBalanceBefore === "number" ? `GHS ${Number(o.refundWalletBalanceBefore).toFixed(2)}` : "—"}
+                  </td>
+                  <td className="py-3 px-2 text-xs">
+                    {typeof o.refundWalletBalanceAfter === "number" ? `GHS ${Number(o.refundWalletBalanceAfter).toFixed(2)}` : "—"}
+                  </td>
                   <td className="py-3 px-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${
                       o.paymentStatus === 'success' ? 'bg-green-100 text-green-700' :
@@ -336,7 +344,7 @@ function AdminAllOrdersTable() {
                     </span>
                   </td>
                   <td className="py-3 px-2">
-                    <OrderStatusBadge status={o.status} size="sm" />
+                    <OrderStatusBadge status={o.refundStatus === "refunded" ? "refunded" : o.status} size="sm" />
                   </td>
                   <td className="py-3 px-2 text-xs text-muted-foreground whitespace-nowrap">
                     {o.lastStatusUpdateAt

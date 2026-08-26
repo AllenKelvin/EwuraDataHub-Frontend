@@ -230,7 +230,7 @@ export default function DashboardPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <OrderStatusBadge status={order.status} size="sm" />
+                        <OrderStatusBadge status={order.refundStatus === "refunded" ? "refunded" : order.status} size="sm" />
                       </td>
                       <td className="py-3 px-4 text-xs text-muted-foreground max-w-[200px]">
                         {order.lastStatusUpdateAt ? (

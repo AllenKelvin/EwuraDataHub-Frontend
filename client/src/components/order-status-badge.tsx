@@ -1,4 +1,4 @@
-import { Clock, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Clock, Loader2, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 
 interface OrderStatusBadgeProps {
   status?: string;
@@ -27,6 +27,15 @@ export function OrderStatusBadge({ status = 'pending', size = 'md' }: OrderStatu
   const iconSize = iconSizeMap[size];
   const textSize = textSizeMap[size];
   const padding = paddingMap[size];
+
+  if (status === 'refunded') {
+    return (
+      <div className={`${padding} rounded-full font-medium flex items-center gap-1.5 bg-orange-600 text-orange-50 border border-orange-700`}>
+        <RotateCcw className={`${iconSize}`} />
+        <span className={textSize}>Refunded</span>
+      </div>
+    );
+  }
 
   if (status === 'pending') {
     return (
