@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
 
 export default function FundWalletPage() {
   const { data: user, isLoading } = useUser();

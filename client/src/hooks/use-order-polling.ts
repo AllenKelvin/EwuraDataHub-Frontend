@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAccessToken } from "@/hooks/use-auth";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
 
 /**
  * Polls an order's status from the server every 5 seconds.

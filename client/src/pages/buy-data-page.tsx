@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
 
 export default function BuyDataPage() {
   const { data: products = [], isLoading } = useProducts();

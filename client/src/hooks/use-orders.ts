@@ -3,7 +3,7 @@ import { api, type InsertOrder } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-auth";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
 
 function getUserId(user: any): string | null {
   if (!user) return null;

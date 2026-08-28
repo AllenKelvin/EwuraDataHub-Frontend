@@ -3,7 +3,7 @@ import { api, type InsertUser } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
 
 // Access token stored in memory and sessionStorage (survives reloads during a session)
 let accessToken: string | null = null;

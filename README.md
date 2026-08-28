@@ -20,7 +20,7 @@ npm run build
 Create a `.env.local` file:
 
 ```
-VITE_BACKEND_URL=https://ewura-hub-api.onrender.com
+VITE_BACKEND_URL=https://ewuradatahub-oqjf.onrender.com
 ```
 
 ## Deployment
@@ -35,7 +35,7 @@ Deploy the `AllenDataHub-Frontend` directory as a Vite project on Vercel:
 6. Add this production environment variable in Vercel:
 
 ```
-VITE_BACKEND_URL=https://ewura-hub-api.onrender.com
+VITE_BACKEND_URL=https://ewuradatahub-oqjf.onrender.com
 ```
 
 Add `http://localhost:5173` as a Preview environment value when testing locally. Add the custom domains `ewuradatahub.com` and `www.ewuradatahub.com` under Vercel **Domains**. The backend must allow those origins through its `CORS_ORIGIN` setting.
