@@ -3,7 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-auth";
 import { api } from "@shared/routes";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-oqjf.onrender.com";
+const BACKEND_URL = "https://allendatahub.onrender.com";
 
 function getUserId(user: any): string | null {
   if (!user) return null;
