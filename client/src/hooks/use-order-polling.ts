@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAccessToken } from "@/hooks/use-auth";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-4w37.onrender.com";
 
 /**
  * Polls an order's status from the server every 5 seconds.
@@ -20,6 +20,7 @@ export function useOrderPolling(orderId: string | null | undefined, enabled = tr
     const poll = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/orders/${orderId}`, {
+          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),

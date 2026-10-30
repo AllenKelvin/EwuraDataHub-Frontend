@@ -3,7 +3,7 @@ import { api, type InsertOrder } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-auth";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewura-hub-api.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://ewuradatahub-4w37.onrender.com";
 
 function getUserId(user: any): string | null {
   if (!user) return null;
@@ -18,7 +18,7 @@ export function useMyOrders(page = 1, limit = 10) {
     queryKey: [api.orders.listMyOrders.path, userId ?? "anonymous", page, limit],
     queryFn: async () => {
       const { fetchWithAuth } = await import("@/lib/fetchWithAuth");
-      const res = await fetchWithAuth(`${api.orders.listMyOrders.path}?page=${page}&limit=${limit}`);
+      const res = await fetchWithAuth(`${api.orders.listMyOrders.path}?page=${page}&limit=${limit}`, { cache: "no-store" });
       if (res.status === 401) return { orders: [], pagination: { total: 0, page: 1, limit, pages: 0 } };
       if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
